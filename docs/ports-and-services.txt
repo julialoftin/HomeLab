@@ -1,1 +1,207 @@
+# ports-and-services.txt
+# HomeServer – Ports, Services, and Exposure Inventory
+# Owner: Julia Loftin
+# Last Updated: 2025-12-23
+#
+# PURPOSE
+# - Single source of truth for network exposure
+# - Used during security reviews, incident response, and firewall audits
+# - Any open port MUST be documented here
+
+###############################################################################
+# LEGEND
+# Exposure:
+#   - VPN-only    : Accessible only via Tailscale
+#   - LAN-only    : Accessible only on local network
+#   - Public      : Accessible from the internet (should be rare)
+#
+# Auth:
+#   - SSH keys
+#   - App auth
+#   - Reverse proxy auth
+###############################################################################
+
+###############################################################################
+# CORE ACCESS
+###############################################################################
+
+Port: 22/tcp
+Service: OpenSSH
+Host: homeserver
+Container: host
+Exposure: VPN-only (Tailscale)
+Auth: SSH keys (password auth disabled)
+Notes:
+- Tailscale SSH ACLs restricted to laptop + iPhone
+- UFW default deny for non-tailscale interfaces
+
+###############################################################################
+# MEDIA SERVICES
+###############################################################################
+
+Port: 32400/tcp
+Service: Plex Media Server
+Host: homeserver
+Container: plex
+Exposure: VPN-only
+Auth: Plex account
+Volumes:
+- /srv/plex/config
+- /srv/plex/media
+Notes:
+- Plex metadata included in backups
+- No LAN-wide or public exposure
+
+###############################################################################
+# DOWNLOAD / INDEXER STACK (ARR SERVICES)
+###############################################################################
+
+Port: 9117/tcp
+Service: Jackett
+Host: homeserver
+Container: jackett
+Exposure: VPN-only
+Auth: App auth (Jackett UI)
+Volumes:
+- /srv/jackett/config
+Notes:
+- Indexer access restricted to VPN
+- Used only by internal services (Radarr/Sonarr)
+
+Port: 8080/tcp
+Service: qBittorrent
+Host: homeserver
+Container: qbittorrent
+Exposure: VPN-only
+Auth: App auth (qBittorrent UI)
+Volumes:
+- /srv/qbittorrent/config
+- /srv/qbittorrent/downloads
+Notes:
+- Web UI never exposed publicly
+- Torrent traffic outbound only
+
+Port: 7878/tcp
+Service: Radarr
+Host: homeserver
+Container: radarr
+Exposure: VPN-only
+Auth: App auth (Radarr UI)
+Volumes:
+- /srv/radarr/config
+- /srv/media/movies
+Notes:
+- Manages movie acquisition
+- Integrates with Jackett and qBittorrent
+
+Port: 8989/tcp
+Service: Sonarr
+Host: homeserver
+Container: sonarr
+Exposure: VPN-only
+Auth: App auth (Sonarr UI)
+Volumes:
+- /srv/sonarr/config
+- /srv/media/tv
+Notes:
+- Manages TV series acquisition
+- Integrates with Jackett and qBittorrent
+
+###############################################################################
+# INTERNAL TOOLS (NO EXPOSED PORTS)
+###############################################################################
+
+Port: N/A
+Service: PlexDash
+Host: homeserver
+Container: plexdash
+Exposure: Internal only (no published port)
+Auth: N/A
+Notes:
+- Internal service only
+- No direct network exposure
+- Accessed via internal tooling or CLI
+
+###############################################################################
+# CONTAINER / SYSTEM MANAGEMENT
+###############################################################################
+
+Port: 9000/tcp
+Service: Portainer
+Host: homeserver
+Container: portainer
+Exposure: VPN-only
+Auth: Portainer local auth
+Volumes:
+- /srv/portainer/data
+Notes:
+- Never exposed to LAN or public interfaces
+
+###############################################################################
+# MONITORING & ALERTING
+###############################################################################
+
+Port: N/A
+Service: Disk usage monitoring
+Host: homeserver
+Container: host
+Exposure: N/A
+Auth: N/A
+Notes:
+- Cron-based disk usage checks
+- Alerts via email or notification script
+
+Port: N/A
+Service: SMART monitoring
+Host: homeserver
+Container: host
+Exposure: N/A
+Auth: N/A
+Notes:
+- smartd enabled
+- Alerts configured for disk failures
+
+###############################################################################
+# BACKUPS
+###############################################################################
+
+Port: N/A
+Service: Backup jobs
+Host: homeserver
+Container: host / backup container
+Exposure: N/A
+Auth: N/A
+Backed Up Paths:
+- /srv/<app>/config
+- /srv/plex/config (Plex metadata)
+Notes:
+- Backup destination documented in BACKUPS.md
+
+###############################################################################
+# TAILSCALE
+###############################################################################
+
+Port: N/A
+Service: Tailscale
+Host: homeserver
+Container: host
+Exposure: VPN mesh
+Auth: Tailscale identity + ACLs
+Notes:
+- Primary access layer for all admin services
+
+###############################################################################
+# UNUSED / BLOCKED PORTS
+###############################################################################
+
+Policy:
+- All ports not explicitly listed above are CLOSED
+- UFW default deny incoming
+- Docker containers must not publish ports without documentation here
+
+###############################################################################
+# CHANGE LOG
+###############################################################################
+# YYYY-MM-DD – Description – Owner
+# 2025-12-23 – Added Jackett, qBittorrent, Radarr, Sonarr; corrected PlexDash – Julia Loftin
 
