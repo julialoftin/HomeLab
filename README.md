@@ -30,7 +30,7 @@ All services run in docker and persist data under '/srv'.
 - No public SSH
 - No router port forwarding
 - VPN (Tailscale) required for admin access
-- SSH keys only (additional hardening needed here)
+- SSH keys only
 - Per-device access control (additional hardening needed here)
 
 ---
