@@ -33,8 +33,3 @@ All services run in docker and persist data under '/srv'.
 - SSH keys only
 - Per-device access control (additional hardening needed here)
 
----
-
-## Admin access
-  - Bash
-    ssh "USER@serverName"
