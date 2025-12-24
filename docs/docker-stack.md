@@ -11,6 +11,8 @@
 
 ## Update Strategy
 
+See plexdash details for automation.
+
 ```bash
 docker pull <image>
 docker stop <container>
