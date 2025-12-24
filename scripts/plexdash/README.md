@@ -85,3 +85,66 @@ Service names must match Docker container names.
 ```bash
 sudo apt update
 sudo apt install -y dialog
+```
+
+### Usage
+
+Run PlexDash from an SSH session:
+```bash
+./plexdash.sh
+```
+
+or, if in PATH:
+```bash
+plexdash.sh
+```
+
+PlexDash runs entirely in the terminal and exits cleanly without affecting running containers unless explicitly instructed.
+
+### How It Works (High-Level)
+  - Uses docker ps to determine container state
+  - Uses docker stats --no-stream for resource usage
+  - Uses dialog menus for interaction
+  - Does not run as root (relies on Docker group membership)
+
+### Safety Notes
+  - PlexDash assumes you are a trusted admin user
+  - No authentication layer beyond SSH
+  - Docker commands are executed directly
+  - Use confirmations for any bulk actions
+
+### Extending PlexDash
+  - PlexDash is intentionally easy to modify.
+## Adding a New Service
+  - Edit the container map:
+```bash
+declare -A containers=(
+  [plex]="Plex Media Server"
+  [newservice]="My New Service"
+)
+```
+  - Ensure the Docker container name matches the key.
+
+### Troubleshooting
+Containers Not Showing
+  - Ensure container names match exactly
+  - Check:
+```bash
+docker ps -a
+```
+Permission Denied Errors
+  - Verify user is in the docker group:
+```bash
+groups
+```
+
+### Security Model
+PlexDash relies on:
+  - SSH key-based access
+  - VPN-only SSH exposure
+  - OS-level permissions
+
+It intentionally avoids:
+  - Running as root
+  - Managing credentials
+  - Exposing network services
