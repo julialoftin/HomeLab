@@ -14,12 +14,12 @@ It is **documentation-first**, designed to function as both a reference and an o
 ---
 
 ## Primary Services
-Service ----- Purpose
-Plex -------- Media streaming
-Sonarr ------ TV automation
-Radarr ------ Movie automation
-Jackett ----- Indexer aggregation
-qBittorrent - Torrent client
+Service - Purpose
+  - Plex -------- Media streaming
+  - Sonarr ------ TV automation
+  - Radarr ------ Movie automation
+  - Jackett ----- Indexer aggregation
+  - qBittorrent - Torrent client
 
 All services run in docker and persist data under '/srv'.
 
