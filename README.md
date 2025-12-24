@@ -35,5 +35,5 @@ All services run in docker and persist data under '/srv'.
 ---
 
 ## Admin access
--> Bash
-ssh <USER>@<serverName>
+  - Bash
+    ssh "USER@serverName"
